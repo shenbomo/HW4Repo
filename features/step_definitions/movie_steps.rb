@@ -1,4 +1,49 @@
-# Completed step definitions for basic features: AddMovie, ViewDetails, EditMovie 
+Given /the following movies have been added to RottenPotatoes:/ do |movies_table|
+	movies_table.hashes.each do |movie|
+		Movie.create(movie)
+	end
+end
+
+
+When /^(?:|I )follow "([^"]*)"$/ do |link|
+  click_link(link)
+end
+
+Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
+	assert_match(/#{e1}.*#{e2}/m, page.body)
+end
+
+When /^(?:|I )check "([^"]*)"$/ do |field|
+  check(field)
+end
+
+
+When /^(?:|I )press "([^"]*)"$/ do |button|
+  click_button(button)
+end
+
+
+When /^I have opted to see movies rated: "(.*?)"$/ do |rating_list|
+
+	ratings = rating_list.split(/\s*,\s*/)
+	ratings.each { |rating| check("ratings_#{rating}") }
+	
+	click_button("Refresh")
+end
+
+Then /^I should see only movies rated "(.*?)"$/ do |rating_list|
+	ratings = page.all("table#movies tbody tr td[2]").map {|t| t.text}
+	rating_list.split(",").each do |field|
+		assert ratings.include?(field.strip)
+	end
+end
+
+Then /^I should see all of the movies$/ do
+	rows = page.all("table#movies tbody tr td[1]").map {|t| t.text}
+	assert rows.size == Movie.all.count
+end
+
+
 
 Given /^I am on the RottenPotatoes home page$/ do
   visit movies_path
@@ -28,6 +73,7 @@ Given /^I am on the RottenPotatoes home page$/ do
    click_on "More about #{title}"
  end
 
+
 Then /^(?:|I )should see "([^"]*)"$/ do |text|
   if page.respond_to? :should
     expect(page).to have_content(text)
@@ -43,36 +89,6 @@ end
  end
 
 
-# New step definitions to be completed for HW3. 
-# Note that you may need to add additional step definitions beyond these
-
-
-# Add a declarative step here for populating the DB with movies.
-
-Given /the following movies have been added to RottenPotatoes:/ do |movies_table|
-  movies_table.hashes.each do |movie|
-    # Each returned movie will be a hash representing one row of the movies_table
-    # The keys will be the table headers and the values will be the row contents.
-    # You should arrange to add that movie to the database here.
-    # You can add the entries directly to the databasse with ActiveRecord methodsQ
-  end
-  flunk "Unimplemented"
-end
-
-When /^I have opted to see movies rated: "(.*?)"$/ do |arg1|
-  # HINT: use String#split to split up the rating_list, then
-  # iterate over the ratings and check/uncheck the ratings
-  # using the appropriate Capybara command(s)
-  flunk "Unimplemented"
-end
-
-Then /^I should see only movies rated "(.*?)"$/ do |arg1|
-  flunk "Unimplemented" 
-end
-
-Then /^I should see all of the movies$/ do
-  flunk "Unimplemented"
-end
 
 
 
